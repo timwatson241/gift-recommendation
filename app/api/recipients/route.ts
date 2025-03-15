@@ -44,6 +44,15 @@ export async function GET(req: NextRequest) {
       },
     });
     
+    // Debug logging for fetched recipients
+    console.log('Fetched Recipients:', recipients.map(recipient => ({
+      ...recipient,
+      birthdayStored: recipient.birthday,
+      birthdayUTC: recipient.birthday.toUTCString(),
+      birthdayLocalized: recipient.birthday.toLocaleString(),
+      birthdayISO: recipient.birthday.toISOString(),
+    })));
+    
     // Return the recipients
     return NextResponse.json(recipients);
     

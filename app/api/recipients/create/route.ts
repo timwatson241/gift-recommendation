@@ -45,6 +45,12 @@ export async function POST(req: NextRequest) {
       );
     }
     
+    // Debug logging for birthday
+    console.log('Received Birthday:', birthday);
+    console.log('Parsed Birthday Date:', new Date(birthday));
+    console.log('Birthday UTC:', new Date(birthday).toUTCString());
+    console.log('Birthday Localized:', new Date(birthday).toLocaleString());
+    
     // Create the recipient
     const recipient = await prisma.recipient.create({
       data: {
@@ -58,6 +64,14 @@ export async function POST(req: NextRequest) {
         budget,
         userId: user.id,
       },
+    });
+    
+    // Debug logging for created recipient
+    console.log('Created Recipient:', {
+      ...recipient,
+      birthdayStored: recipient.birthday,
+      birthdayUTC: recipient.birthday.toUTCString(),
+      birthdayLocalized: recipient.birthday.toLocaleString(),
     });
     
     // Return success response

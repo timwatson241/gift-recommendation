@@ -13,6 +13,11 @@ import {
   CardFooter,
   Badge,
 } from "../../../components/ui/Card";
+import {
+  formatBirthday,
+  getDaysUntilBirthday,
+  getBadgeVariant,
+} from "../../../dashboard-date-utils";
 
 // Define the Recipient type
 type Recipient = {
@@ -53,9 +58,7 @@ export default function RecipientDetail() {
       if (status !== "authenticated" || !recipientId) return;
 
       try {
-        const response = await fetch(`/api/recipients/${recipientId}`, {
-          credentials: "include",
-        });
+        const response = await fetch(`/api/recipients/${recipientId}`);
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -89,49 +92,6 @@ export default function RecipientDetail() {
       fetchRecipient();
     }
   }, [status, recipientId]);
-
-  // Format birthday to display format
-  const formatBirthday = (dateString: string) => {
-    // Create date with time set to noon to avoid timezone issues
-    const date = new Date(dateString);
-    const utcDate = new Date(
-      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0)
-    );
-
-    return new Intl.DateTimeFormat("en-US", {
-      month: "long",
-      day: "numeric",
-      timeZone: "UTC", // Force UTC timezone for display
-    }).format(utcDate);
-  };
-
-  // Calculate days until next birthday
-  const getDaysUntilBirthday = (birthdayString: string) => {
-    const today = new Date();
-    const birthday = new Date(birthdayString);
-
-    // Set birthday to this year
-    birthday.setFullYear(today.getFullYear());
-
-    // If birthday has already passed this year, set to next year
-    if (birthday < today) {
-      birthday.setFullYear(today.getFullYear() + 1);
-    }
-
-    // Calculate difference in days
-    const diffTime = birthday.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    return diffDays;
-  };
-
-  // Get badge variant based on days until birthday
-  const getBadgeVariant = (days: number) => {
-    if (days === 0) return "danger";
-    if (days <= 7) return "warning";
-    if (days <= 30) return "primary";
-    return "default";
-  };
 
   // Loading state
   if (status === "loading" || loading) {
